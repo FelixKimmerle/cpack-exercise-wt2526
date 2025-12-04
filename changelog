@@ -1,4 +1,5 @@
-Example changelog
+cpackexample (0.1.0) unstable; urgency=medium
 
-- v0.1.0
-Project was born
+  * Initial release.
+
+ -- Felix Kimmerle <FelixKimmerle@hotmail.com>  Thu, 04 Dec 2025 12:00:00 +0100

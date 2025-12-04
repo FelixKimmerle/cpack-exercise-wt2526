@@ -10,7 +10,7 @@ DEAL_II_INITIALIZE_CACHED_VARIABLES()
 # Uses the FindBoost module of CMake
 find_package(Boost 1.83 COMPONENTS filesystem REQUIRED)
 
-find_package(yaml-cpp 0.6 REQUIRED)
+find_package(yaml-cpp 0.8 REQUIRED)
 
 add_library(cpackexamplelib filesystem/filesystem.cpp fem/fem.cpp flatset/flatset.cpp yamlParser/yamlParser.cpp)
 
@@ -38,18 +38,42 @@ install(
     COMPONENT doc
 )
 
-set(DEBIAN_CHANGELOG "${CMAKE_SOURCE_DIR}/changelog")
-install(FILES "${DEBIAN_CHANGELOG}"
-          DESTINATION "${CMAKE_INSTALL_DOCDIR}"
-          RENAME "changelog")
 
+set(DEB_CHANGELOG_SRC "${CMAKE_SOURCE_DIR}/changelog")
+set(DEB_CHANGELOG_GZ  "${CMAKE_BINARY_DIR}/changelog.gz")
 
-install(CODE "
-    set(f \"\${CMAKE_INSTALL_PREFIX}/${CMAKE_INSTALL_DATADIR}/doc/${PROJECT_NAME}/changelog.Debian\")
-    if(EXISTS \"\${f}\")
-      execute_process(COMMAND sh -c \"gzip -9 -f '\${f}'\")
-    endif()
-  ")
+add_custom_command(
+    OUTPUT "${DEB_CHANGELOG_GZ}"
+   COMMAND ${CMAKE_COMMAND} -E env SOURCE_DATE_EPOCH=0 GZIP=-9 sh -c
+          "gzip -n -c '${DEB_CHANGELOG_SRC}' > '${DEB_CHANGELOG_GZ}'"
+              DEPENDS "${DEB_CHANGELOG_SRC}"
+    VERBATIM
+  )
+  add_custom_target(gen_deb_changelog ALL DEPENDS "${DEB_CHANGELOG_GZ}")
+
+  install(
+    FILES "${DEB_CHANGELOG_GZ}"
+    DESTINATION "${CMAKE_INSTALL_DOCDIR}"
+    RENAME "changelog.gz"
+  )
+
+set(DEB_MANPAGE_SRC "${CMAKE_SOURCE_DIR}/man/cpackexample.1")
+set(DEB_MANPAGE_GZ  "${CMAKE_BINARY_DIR}/cpackexample.1.gz")
+
+add_custom_command(
+    OUTPUT "${DEB_MANPAGE_GZ}"
+   COMMAND ${CMAKE_COMMAND} -E env SOURCE_DATE_EPOCH=0 GZIP=-9 sh -c
+          "gzip -n -c '${DEB_MANPAGE_SRC}' > '${DEB_MANPAGE_GZ}'"
+              DEPENDS "${DEB_MANPAGE_SRC}"
+    VERBATIM
+  )
+  add_custom_target(gen_deb_manpage ALL DEPENDS "${DEB_MANPAGE_GZ}")
+
+  install(
+    FILES "${DEB_MANPAGE_GZ}"
+    DESTINATION "${CMAKE_INSTALL_MANDIR}/man1"
+  )
+
 
 install(TARGETS cpackexample cpackexamplelib
   LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}

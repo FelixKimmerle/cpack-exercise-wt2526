@@ -3,9 +3,9 @@ set(CPACK_PACKAGE_NAME ${PROJECT_NAME})
 
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION
 "SSE artificial cpack example
- This package demonstrates packaging with CMake/CPack to TGZ and DEB.
- It installs a small binary and a library and ships docs under
- /usr/share/doc/${CPACK_PACKAGE_NAME}/."
+This package demonstrates packaging with CMake/CPack to TGZ and DEB.
+It installs a small binary and a library and ships docs under
+/usr/share/doc/${CPACK_PACKAGE_NAME}/."
 )
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY ""
   CACHE STRING "Very extensive description of the cpack example module")
